@@ -1,0 +1,2629 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6",
+     "name": "Account_X API Collection",
+    "description": "Complete API collection for Account_X application with Enterprise-Grade Security, Automatic Tenant System, Authentication, Accounting, GST, CFO, CA, System, and Integrations modules. Features comprehensive security measures including XSS protection, SQL injection prevention, input sanitization, security audit logging, and multi-tenant data isolation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "JWT authentication token"
+    },
+    {
+      "key": "tenant_id",
+      "value": "",
+      "type": "string",
+      "description": "Current tenant ID (auto-generated for admin users, no longer required in headers)"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "Current user ID"
+    },
+    {
+      "key": "role_id",
+      "value": "",
+      "type": "string",
+      "description": "Role ID for permission testing"
+    },
+    {
+      "key": "account_id",
+      "value": "",
+      "type": "string",
+      "description": "Account ID for testing account operations"
+    },
+    {
+      "key": "journal_entry_id",
+      "value": "",
+      "type": "string",
+      "description": "Journal entry ID for testing"
+    },
+    {
+      "key": "cost_center_id",
+      "value": "",
+      "type": "string",
+      "description": "Cost center ID for testing"
+    },
+    {
+      "key": "hsn_code",
+      "value": "",
+      "type": "string",
+      "description": "HSN code for GST testing"
+    },
+    {
+      "key": "tax_rate_id",
+      "value": "",
+      "type": "string",
+      "description": "Tax rate ID for GST testing"
+    },
+    {
+      "key": "roadmap_id",
+      "value": "",
+      "type": "string",
+      "description": "Financial roadmap ID for CFO module"
+    },
+    {
+      "key": "kpi_id",
+      "value": "",
+      "type": "string",
+      "description": "KPI ID for CFO module"
+    },
+    {
+      "key": "client_id",
+      "value": "",
+      "type": "string",
+      "description": "Client ID for CA module"
+    },
+    {
+      "key": "feature_flag_name",
+      "value": "",
+      "type": "string",
+      "description": "Feature flag name for system module"
+    },
+    {
+      "key": "security_audit_id",
+      "value": "",
+      "type": "string",
+      "description": "Security audit log ID for testing"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and authorization endpoints",
+      "item": [
+        {
+          "name": "Register Admin User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"isAdmin\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Create a new admin user with strong password validation. Tenant will be auto-generated with all roles. Password must meet security requirements: 8+ chars, uppercase, lowercase, number, special char."
+          },
+          "response": []
+        },
+        {
+          "name": "Register User with Specific Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"accountant@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"roleName\": \"Accountant\",\n  \"tenantId\": \"{{tenant_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Create a new user with specific role and strong password validation. Available roles: Admin, Accountant, Viewer, cfo, finance-manager, finance-analyst, gst-manager, gst-operator, ca-manager, ca-operator. Password must meet security requirements."
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Authenticate user and get JWT token with enhanced security. For admin users without tenant, tenant will be auto-generated and Admin role will be assigned. All login attempts are logged for security monitoring."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            },
+            "description": "Invalidate current JWT token"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Get current user profile with tenant information and roles"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"your_refresh_token_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            },
+            "description": "Refresh access token"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/permissions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "permissions"]
+            },
+            "description": "Get permissions for current user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/roles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "roles"]
+            },
+            "description": "Get all available roles for the current tenant"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tenant System",
+      "description": "Automatic tenant management system - no manual tenant ID required in headers",
+      "item": [
+        {
+          "name": "Admin Login with Auto Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Admin login that automatically generates tenant and Admin role. Response includes tenantId."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User with Tenant Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Get current user with populated tenant and role information"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Resource (Auto Tenant)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Resource\",\n  \"description\": \"Test description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts"]
+            },
+            "description": "Create resource without tenant ID in header - tenant is automatically extracted from authenticated user"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Accounting",
+      "description": "Accounting module endpoints",
+      "item": [
+        {
+          "name": "Accounts",
+          "description": "Chart of accounts management",
+          "item": [
+            {
+              "name": "Get All Accounts",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/accounts?page=1&limit=20&type=asset",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "accounts"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "type",
+                      "value": "asset",
+                      "description": "Filter by account type (asset, liability, equity, income, expense)"
+                    }
+                  ]
+                },
+                "description": "Get all accounts for current tenant with pagination and filtering"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Account",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Cash Account\",\n  \"code\": \"1001\",\n  \"type\": \"asset\",\n  \"description\": \"Main cash account\",\n  \"parentAccountId\": null,\n  \"isGroup\": false\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/accounts",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "accounts"]
+                },
+                "description": "Create a new account"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Account by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/accounts/{{account_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "accounts", "{{account_id}}"]
+                },
+                "description": "Get account by ID"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Cash Account\",\n  \"description\": \"Updated description\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/accounts/{{account_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "accounts", "{{account_id}}"]
+                },
+                "description": "Update an account"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Account",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/accounts/{{account_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "accounts", "{{account_id}}"]
+                },
+                "description": "Delete an account"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Journal Entries",
+          "description": "Journal entry management",
+          "item": [
+            {
+              "name": "Get All Journal Entries",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/journal-entries?startDate=2023-01-01&endDate=2023-12-31&page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "journal-entries"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2023-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2023-12-31"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                },
+                "description": "Get all journal entries with date range filtering and pagination"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Journal Entry",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"date\": \"2023-07-15\",\n  \"reference\": \"INV-001\",\n  \"description\": \"Purchase of office supplies\",\n  \"costCenterId\": \"{{cost_center_id}}\",\n  \"entries\": [\n    {\n      \"accountId\": \"account_id_1\",\n      \"description\": \"Office supplies expense\",\n      \"debit\": 5000,\n      \"credit\": 0\n    },\n    {\n      \"accountId\": \"account_id_2\",\n      \"description\": \"Cash payment\",\n      \"debit\": 0,\n      \"credit\": 5000\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/journal-entries",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "journal-entries"]
+                },
+                "description": "Create a new journal entry"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Journal Entry by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/journal-entries/{{journal_entry_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "journal-entries", "{{journal_entry_id}}"]
+                },
+                "description": "Get journal entry by ID"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Financial Reports",
+          "description": "Financial reporting endpoints",
+          "item": [
+            {
+              "name": "Get Trial Balance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/reports/trial-balance?asOfDate=2023-12-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "reports", "trial-balance"],
+                  "query": [
+                    {
+                      "key": "asOfDate",
+                      "value": "2023-12-31"
+                    }
+                  ]
+                },
+                "description": "Generate trial balance report"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Balance Sheet",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/reports/balance-sheet?asOfDate=2023-12-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "reports", "balance-sheet"],
+                  "query": [
+                    {
+                      "key": "asOfDate",
+                      "value": "2023-12-31"
+                    }
+                  ]
+                },
+                "description": "Generate balance sheet report"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Profit and Loss",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/reports/profit-loss?startDate=2023-01-01&endDate=2023-12-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "reports", "profit-loss"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2023-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2023-12-31"
+                    }
+                  ]
+                },
+                "description": "Generate profit and loss report"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cost Centers",
+          "description": "Cost center management",
+          "item": [
+            {
+              "name": "Get All Cost Centers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cost-centers",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cost-centers"]
+                },
+                "description": "Get all cost centers"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Cost Center",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Marketing Department\",\n  \"code\": \"MKT-001\",\n  \"description\": \"Marketing department cost center\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cost-centers",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cost-centers"]
+                },
+                "description": "Create a new cost center"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GST",
+      "description": "GST module endpoints",
+      "item": [
+        {
+          "name": "HSN Codes",
+          "description": "HSN code management",
+          "item": [
+            {
+              "name": "Get All HSN Codes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/hsn-codes?search=furniture",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "hsn-codes"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "furniture"
+                    }
+                  ]
+                },
+                "description": "Get all HSN codes with search functionality"
+              },
+              "response": []
+            },
+            {
+              "name": "Get HSN Code by Code",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/hsn-codes/{{hsn_code}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "hsn-codes", "{{hsn_code}}"]
+                },
+                "description": "Get HSN code details by code"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Tax Rates",
+          "description": "Tax rate management",
+          "item": [
+            {
+              "name": "Get All Tax Rates",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/tax-rates",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "tax-rates"]
+                },
+                "description": "Get all GST tax rates"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Tax Rate by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/tax-rates/{{tax_rate_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "tax-rates", "{{tax_rate_id}}"]
+                },
+                "description": "Get tax rate details by ID"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "GST Returns",
+          "description": "GST return filing",
+          "item": [
+            {
+              "name": "Generate GSTR-1",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/returns/gstr1?month=07&year=2023&format=json",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "returns", "gstr1"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "07"
+                    },
+                    {
+                      "key": "year",
+                      "value": "2023"
+                    },
+                    {
+                      "key": "format",
+                      "value": "json"
+                    }
+                  ]
+                },
+                "description": "Generate GSTR-1 return data"
+              },
+              "response": []
+            },
+            {
+              "name": "Generate GSTR-3B",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/returns/gstr3b?month=07&year=2023&format=json",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "returns", "gstr3b"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "07"
+                    },
+                    {
+                      "key": "year",
+                      "value": "2023"
+                    },
+                    {
+                      "key": "format",
+                      "value": "json"
+                    }
+                  ]
+                },
+                "description": "Generate GSTR-3B return data"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Registrations",
+          "description": "GST registration management",
+          "item": [
+            {
+              "name": "Get All Registrations",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/registrations",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "registrations"]
+                },
+                "description": "Get all GST registrations"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Registration",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"legalName\": \"ABC Corporation\",\n  \"tradeName\": \"ABC Corp\",\n  \"gstNumber\": \"27AABCU9603R1ZX\",\n  \"panNumber\": \"AABCU9603R\",\n  \"address\": {\n    \"line1\": \"123 Business Park\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"pincode\": \"400001\"\n  },\n  \"contactPerson\": \"John Doe\",\n  \"contactEmail\": \"john@abccorp.com\",\n  \"contactPhone\": \"+91 9876543210\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/gst/registrations",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "gst", "registrations"]
+                },
+                "description": "Create a new GST registration"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Invoices",
+          "description": "GST invoice management",
+          "item": [
+            {
+              "name": "Get All Invoices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/invoices?startDate=2023-01-01&endDate=2023-12-31&page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "invoices"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2023-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2023-12-31"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                },
+                "description": "Get all invoices with date range filtering and pagination"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Invoice",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoiceNumber\": \"INV-001\",\n  \"invoiceDate\": \"2023-07-15\",\n  \"customerName\": \"XYZ Ltd\",\n  \"customerGstin\": \"29AABCU9603R1ZX\",\n  \"placeOfSupply\": \"Karnataka\",\n  \"items\": [\n    {\n      \"description\": \"Product A\",\n      \"hsnCode\": \"1234\",\n      \"quantity\": 2,\n      \"unitPrice\": 1000,\n      \"discount\": 0,\n      \"taxableValue\": 2000,\n      \"cgstRate\": 9,\n      \"sgstRate\": 9,\n      \"igstRate\": 0,\n      \"cessRate\": 0\n    }\n  ],\n  \"totalTaxableValue\": 2000,\n  \"totalCgst\": 180,\n  \"totalSgst\": 180,\n  \"totalIgst\": 0,\n  \"totalCess\": 0,\n  \"totalAmount\": 2360\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/invoices",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "invoices"]
+                },
+                "description": "Create a new GST invoice"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "E-Invoice",
+          "description": "E-Invoice management",
+          "item": [
+            {
+              "name": "Generate E-Invoice",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoiceId\": \"invoice_id_here\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/einvoice/generate",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "einvoice", "generate"]
+                },
+                "description": "Generate e-invoice for an existing invoice"
+              },
+              "response": []
+            },
+            {
+              "name": "Verify E-Invoice",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/einvoice/verify/{{irn}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "einvoice", "verify", "{{irn}}"]
+                },
+                "description": "Verify e-invoice by IRN"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "E-Way Bill",
+          "description": "E-Way Bill management",
+          "item": [
+            {
+              "name": "Generate E-Way Bill",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoiceId\": \"invoice_id_here\",\n  \"transporterName\": \"ABC Logistics\",\n  \"transporterId\": \"29AAAAA0000A1Z5\",\n  \"transportMode\": \"road\",\n  \"vehicleNumber\": \"KA01AB1234\",\n  \"fromPlace\": \"Bangalore\",\n  \"fromState\": \"Karnataka\",\n  \"toPlace\": \"Mumbai\",\n  \"toState\": \"Maharashtra\",\n  \"transactionType\": \"regular\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/ewaybill/generate",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "ewaybill", "generate"]
+                },
+                "description": "Generate e-way bill for an existing invoice"
+              },
+              "response": []
+            },
+            {
+              "name": "Verify E-Way Bill",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/ewaybill/verify/{{ewbNumber}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "ewaybill", "verify", "{{ewbNumber}}"]
+                },
+                "description": "Verify e-way bill by EWB number"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Input Tax Credit",
+          "description": "ITC management",
+          "item": [
+            {
+              "name": "Get ITC Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/itc/summary?month=07&year=2023",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "itc", "summary"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "07"
+                    },
+                    {
+                      "key": "year",
+                      "value": "2023"
+                    }
+                  ]
+                },
+                "description": "Get ITC summary for a specific month"
+              },
+              "response": []
+            },
+            {
+              "name": "Reconcile ITC",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"month\": 7,\n  \"year\": 2023\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/itc/reconcile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "itc", "reconcile"]
+                },
+                "description": "Reconcile ITC for a specific month"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Tax Management",
+          "description": "Tax management",
+          "item": [
+            {
+              "name": "Get Tax Liability",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/tax/liability?month=07&year=2023",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "tax", "liability"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "07"
+                    },
+                    {
+                      "key": "year",
+                      "value": "2023"
+                    }
+                  ]
+                },
+                "description": "Get tax liability for a specific month"
+              },
+              "response": []
+            },
+            {
+              "name": "Record Tax Payment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"month\": 7,\n  \"year\": 2023,\n  \"paymentDate\": \"2023-08-20\",\n  \"challanNumber\": \"CHALLAN123\",\n  \"cgst\": 5000,\n  \"sgst\": 5000,\n  \"igst\": 0,\n  \"cess\": 0,\n  \"interest\": 0,\n  \"penalty\": 0,\n  \"total\": 10000\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/tax/payment",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "tax", "payment"]
+                },
+                "description": "Record tax payment"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "GST Reports",
+          "description": "GST reporting",
+          "item": [
+            {
+              "name": "Get HSN Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/reports/gst/hsn-summary?startDate=2023-01-01&endDate=2023-12-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "reports", "gst", "hsn-summary"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2023-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2023-12-31"
+                    }
+                  ]
+                },
+                "description": "Get HSN summary report"
+              },
+              "response": []
+            },
+            {
+              "name": "Get B2B Invoice Report",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/reports/gst/b2b-invoices?month=07&year=2023",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "reports", "gst", "b2b-invoices"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "07"
+                    },
+                    {
+                      "key": "year",
+                      "value": "2023"
+                    }
+                  ]
+                },
+                "description": "Get B2B invoice report"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CFO",
+      "description": "CFO module endpoints",
+      "item": [
+        {
+          "name": "Financial Roadmaps",
+          "description": "Financial roadmap management",
+          "item": [
+            {
+              "name": "Get All Roadmaps",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/roadmaps",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "roadmaps"]
+                },
+                "description": "Get all financial roadmaps"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Roadmap",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"2023 Financial Strategy\",\n  \"description\": \"Financial roadmap for 2023 fiscal year\",\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-12-31\",\n  \"milestones\": [\n    {\n      \"title\": \"Q1 Review\",\n      \"dueDate\": \"2023-03-31\",\n      \"description\": \"First quarter financial review\"\n    },\n    {\n      \"title\": \"Mid-year Assessment\",\n      \"dueDate\": \"2023-06-30\",\n      \"description\": \"Mid-year financial assessment\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/roadmaps",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "roadmaps"]
+                },
+                "description": "Create a new financial roadmap"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "KPIs",
+          "description": "Key Performance Indicators",
+          "item": [
+            {
+              "name": "Get All KPIs",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/kpis",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "kpis"]
+                },
+                "description": "Get all KPIs"
+              },
+              "response": []
+            },
+            {
+              "name": "Create KPI",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Gross Profit Margin\",\n  \"description\": \"Gross profit as a percentage of revenue\",\n  \"category\": \"profitability\",\n  \"target\": 35,\n  \"unit\": \"%\",\n  \"frequency\": \"monthly\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/kpis",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "kpis"]
+                },
+                "description": "Create a new KPI"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Dashboard",
+          "description": "CFO Dashboard",
+          "item": [
+            {
+              "name": "Get Dashboard Data",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/dashboard",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "dashboard"]
+                },
+                "description": "Get CFO dashboard data"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Scenarios",
+          "description": "Financial scenario management",
+          "item": [
+            {
+              "name": "Get All Scenarios",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/scenarios",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "scenarios"]
+                },
+                "description": "Get all financial scenarios"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Scenario",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Expansion Scenario\",\n  \"description\": \"Financial scenario for market expansion\",\n  \"assumptions\": [\n    {\n      \"name\": \"Revenue Growth\",\n      \"value\": 15,\n      \"unit\": \"%\"\n    },\n    {\n      \"name\": \"Cost Increase\",\n      \"value\": 8,\n      \"unit\": \"%\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/scenarios",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "scenarios"]
+                },
+                "description": "Create a new financial scenario"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Models",
+          "description": "Financial model management",
+          "item": [
+            {
+              "name": "Get All Models",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/models",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "models"]
+                },
+                "description": "Get all financial models"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Model",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Revenue Forecast Model\",\n  \"description\": \"Model for forecasting revenue\",\n  \"type\": \"forecast\",\n  \"parameters\": [\n    {\n      \"name\": \"Growth Rate\",\n      \"value\": 10,\n      \"unit\": \"%\"\n    },\n    {\n      \"name\": \"Seasonality\",\n      \"value\": true\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/models",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "models"]
+                },
+                "description": "Create a new financial model"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Risks",
+          "description": "Financial risk management",
+          "item": [
+            {
+              "name": "Get All Risks",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/risks",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "risks"]
+                },
+                "description": "Get all financial risks"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Risk",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Currency Fluctuation\",\n  \"description\": \"Risk due to currency exchange rate fluctuations\",\n  \"category\": \"market\",\n  \"impact\": \"high\",\n  \"probability\": \"medium\",\n  \"mitigationStrategy\": \"Implement hedging strategy\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/risks",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "risks"]
+                },
+                "description": "Create a new financial risk"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Controls",
+          "description": "Financial control management",
+          "item": [
+            {
+              "name": "Get All Controls",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/controls",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "controls"]
+                },
+                "description": "Get all financial controls"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Control",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Expense Approval\",\n  \"description\": \"Control for expense approval process\",\n  \"category\": \"operational\",\n  \"frequency\": \"continuous\",\n  \"responsibleRole\": \"Finance Manager\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/controls",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "controls"]
+                },
+                "description": "Create a new financial control"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Fundraising",
+          "description": "Fundraising management",
+          "item": [
+            {
+              "name": "Get All Fundraising Campaigns",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/fundraising",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "fundraising"]
+                },
+                "description": "Get all fundraising campaigns"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Fundraising Campaign",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Series A Funding\",\n  \"description\": \"Series A funding round\",\n  \"targetAmount\": 5000000,\n  \"startDate\": \"2023-09-01\",\n  \"endDate\": \"2023-12-31\",\n  \"status\": \"planned\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/fundraising",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "fundraising"]
+                },
+                "description": "Create a new fundraising campaign"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cap Table",
+          "description": "Cap table management",
+          "item": [
+            {
+              "name": "Get Cap Table",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/captable",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "captable"]
+                },
+                "description": "Get current cap table"
+              },
+              "response": []
+            },
+            {
+              "name": "Add Cap Table Entry",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"investorName\": \"Acme Ventures\",\n  \"investorType\": \"VC\",\n  \"shareClass\": \"Preferred\",\n  \"sharesIssued\": 100000,\n  \"pricePerShare\": 5.0,\n  \"investmentDate\": \"2023-07-15\",\n  \"notes\": \"Series A investment\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/captable",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "captable"]
+                },
+                "description": "Add new entry to cap table"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Metrics",
+          "description": "Financial metrics management",
+          "item": [
+            {
+              "name": "Get All Metrics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/metrics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "metrics"]
+                },
+                "description": "Get all financial metrics"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Metric",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Customer Acquisition Cost\",\n  \"description\": \"Cost to acquire a new customer\",\n  \"formula\": \"Marketing Expenses / New Customers\",\n  \"unit\": \"INR\",\n  \"frequency\": \"monthly\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/metrics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "metrics"]
+                },
+                "description": "Create a new financial metric"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Budgets",
+          "description": "Budget management",
+          "item": [
+            {
+              "name": "Get All Budgets",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/budgets",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "budgets"]
+                },
+                "description": "Get all budgets"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Budget",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Marketing Budget 2023\",\n  \"description\": \"Marketing department budget for 2023\",\n  \"fiscalYear\": 2023,\n  \"department\": \"Marketing\",\n  \"totalAmount\": 500000,\n  \"categories\": [\n    {\n      \"name\": \"Digital Marketing\",\n      \"amount\": 300000\n    },\n    {\n      \"name\": \"Events\",\n      \"amount\": 200000\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/budgets",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "budgets"]
+                },
+                "description": "Create a new budget"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Forecasts",
+          "description": "Financial forecast management",
+          "item": [
+            {
+              "name": "Get All Forecasts",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/forecasts",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "forecasts"]
+                },
+                "description": "Get all financial forecasts"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Forecast",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Revenue Forecast 2023\",\n  \"description\": \"Revenue forecast for 2023\",\n  \"type\": \"revenue\",\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-12-31\",\n  \"frequency\": \"monthly\",\n  \"values\": [\n    {\n      \"period\": \"2023-01\",\n      \"amount\": 100000\n    },\n    {\n      \"period\": \"2023-02\",\n      \"amount\": 110000\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/forecasts",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "forecasts"]
+                },
+                "description": "Create a new financial forecast"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cash Flow",
+          "description": "Cash flow management",
+          "item": [
+            {
+              "name": "Get Cash Flow Statement",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/cashflow?startDate=2023-01-01&endDate=2023-12-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "cashflow"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2023-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2023-12-31"
+                    }
+                  ]
+                },
+                "description": "Get cash flow statement"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Cash Flow Projection",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Q3 Cash Flow Projection\",\n  \"description\": \"Cash flow projection for Q3 2023\",\n  \"startDate\": \"2023-07-01\",\n  \"endDate\": \"2023-09-30\",\n  \"frequency\": \"monthly\",\n  \"inflows\": [\n    {\n      \"category\": \"Sales\",\n      \"amount\": 500000,\n      \"month\": \"2023-07\"\n    }\n  ],\n  \"outflows\": [\n    {\n      \"category\": \"Salaries\",\n      \"amount\": 200000,\n      \"month\": \"2023-07\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/cashflow/projections",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "cashflow", "projections"]
+                },
+                "description": "Create a new cash flow projection"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Treasury",
+          "description": "Treasury management",
+          "item": [
+            {
+              "name": "Get Treasury Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/treasury",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "treasury"]
+                },
+                "description": "Get treasury summary"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Investment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"Fixed Deposit\",\n  \"amount\": 1000000,\n  \"institution\": \"HDFC Bank\",\n  \"startDate\": \"2023-07-01\",\n  \"maturityDate\": \"2024-07-01\",\n  \"interestRate\": 6.5,\n  \"notes\": \"1-year FD\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/treasury/investments",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "treasury", "investments"]
+                },
+                "description": "Create a new treasury investment"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Compliance",
+          "description": "Financial compliance management",
+          "item": [
+            {
+              "name": "Get Compliance Tasks",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/compliance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "compliance"]
+                },
+                "description": "Get all compliance tasks"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Compliance Task",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Annual Financial Audit\",\n  \"description\": \"Complete annual financial audit\",\n  \"dueDate\": \"2023-09-30\",\n  \"priority\": \"high\",\n  \"status\": \"pending\",\n  \"assignedTo\": \"{{user_id}}\",\n  \"category\": \"audit\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/compliance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "compliance"]
+                },
+                "description": "Create a new compliance task"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Investor Relations",
+          "description": "Investor relations management",
+          "item": [
+            {
+              "name": "Get IR Activities",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/ir",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "ir"]
+                },
+                "description": "Get all investor relations activities"
+              },
+              "response": []
+            },
+            {
+              "name": "Create IR Activity",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Quarterly Investor Call\",\n  \"description\": \"Q2 2023 investor call\",\n  \"date\": \"2023-07-15\",\n  \"type\": \"call\",\n  \"participants\": [\n    {\n      \"name\": \"Acme Ventures\",\n      \"type\": \"investor\"\n    }\n  ],\n  \"notes\": \"Discuss Q2 financial results\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/ir",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "ir"]
+                },
+                "description": "Create a new investor relations activity"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Tax Provisions",
+          "description": "Tax provision management",
+          "item": [
+            {
+              "name": "Get Tax Provisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/tax-provisions",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "tax-provisions"]
+                },
+                "description": "Get all tax provisions"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Tax Provision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fiscalYear\": 2023,\n  \"quarter\": 2,\n  \"taxType\": \"Income Tax\",\n  \"amount\": 250000,\n  \"effectiveTaxRate\": 25.5,\n  \"notes\": \"Q2 2023 income tax provision\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/cfo/tax-provisions",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "cfo", "tax-provisions"]
+                },
+                "description": "Create a new tax provision"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CA",
+      "description": "CA module endpoints",
+      "item": [
+        {
+          "name": "Clients",
+          "description": "Client management",
+          "item": [
+            {
+              "name": "Get All Clients",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/ca/clients",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "ca", "clients"]
+                },
+                "description": "Get all clients"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Client",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"ABC Corporation\",\n  \"contactPerson\": \"John Doe\",\n  \"email\": \"john@abccorp.com\",\n  \"phone\": \"+91 9876543210\",\n  \"address\": {\n    \"line1\": \"123 Business Park\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"pincode\": \"400001\"\n  },\n  \"gstNumber\": \"27AABCU9603R1ZX\",\n  \"panNumber\": \"AABCU9603R\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/ca/clients",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "ca", "clients"]
+                },
+                "description": "Create a new client"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Compliance Tasks",
+          "description": "Compliance task management",
+          "item": [
+            {
+              "name": "Get All Compliance Tasks",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/ca/compliance-tasks?clientId={{client_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "ca", "compliance-tasks"],
+                  "query": [
+                    {
+                      "key": "clientId",
+                      "value": "{{client_id}}"
+                    }
+                  ]
+                },
+                "description": "Get all compliance tasks for a client"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Compliance Task",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"clientId\": \"{{client_id}}\",\n  \"title\": \"File GST Return\",\n  \"description\": \"File monthly GST return\",\n  \"dueDate\": \"2023-08-20\",\n  \"priority\": \"high\",\n  \"status\": \"pending\",\n  \"assignedTo\": \"{{user_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/ca/compliance-tasks",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "ca", "compliance-tasks"]
+                },
+                "description": "Create a new compliance task"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "description": "System management endpoints",
+      "item": [
+        {
+          "name": "Get System Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "status"]
+            },
+            "description": "Get system status information"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Feature Flags",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/feature-flags",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "feature-flags"]
+            },
+            "description": "Get all feature flags"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Feature Flag",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/feature-flags/{{feature_flag_name}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "feature-flags", "{{feature_flag_name}}"]
+            },
+            "description": "Update a feature flag"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Security",
+      "description": "Enterprise-grade security endpoints and monitoring",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check server health and security status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Security Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/security/audit-logs?startDate=2023-01-01&endDate=2023-12-31&riskLevel=HIGH",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "security", "audit-logs"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2023-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2023-12-31"
+                },
+                {
+                  "key": "riskLevel",
+                  "value": "HIGH"
+                }
+              ]
+            },
+            "description": "Get security audit logs with filtering by date range and risk level"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Security Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/security/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "security", "stats"]
+            },
+            "description": "Get comprehensive security statistics and metrics"
+          },
+          "response": []
+        },
+        {
+          "name": "Export Security Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/security/export?format=csv&startDate=2023-01-01&endDate=2023-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "security", "export"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "csv"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2023-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2023-12-31"
+                }
+              ]
+            },
+            "description": "Export security audit logs in CSV or JSON format"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Suspicious Activity Patterns",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/system/security/patterns",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "system", "security", "patterns"]
+            },
+            "description": "Get detected suspicious activity patterns and security alerts"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldpassword123\",\n  \"newPassword\": \"NewSecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/update-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "update-password"]
+            },
+            "description": "Update user password with strong password validation"
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "forgot-password"]
+            },
+            "description": "Request password reset with secure token generation"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset_token_here\",\n  \"newPassword\": \"NewSecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "reset-password"]
+            },
+            "description": "Reset password using secure token with strong password validation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Integrations",
+      "description": "Third-party integrations",
+      "item": [
+        {
+          "name": "Get All Integrations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/integrations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "integrations"]
+            },
+            "description": "Get all available integrations"
+          },
+          "response": []
+        },
+        {
+          "name": "Connect Integration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider\": \"tally\",\n  \"credentials\": {\n    \"serverUrl\": \"http://localhost:9000\",\n    \"companyName\": \"Company Name\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/integrations/connect",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "integrations", "connect"]
+            },
+            "description": "Connect to a third-party integration"
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Integration",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/integrations/tally",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "integrations", "tally"]
+            },
+            "description": "Disconnect from a third-party integration"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
